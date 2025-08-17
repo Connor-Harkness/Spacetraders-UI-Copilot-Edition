@@ -1,0 +1,35 @@
+{
+  "name": "spacetraders-ui-copilot-edition",
+  "version": "1.0.0",
+  "description": "this will be a UI for the SpaceTraders game. it should be entirely made via github copilot!",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@expo/vector-icons": "^14.1.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@types/react": "^19.1.10",
+    "@types/react-native": "^0.72.8",
+    "babel-preset-expo": "^13.2.3",
+    "expo-router": "^5.1.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-native": "^0.81.0",
+    "react-native-web": "^0.21.0",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.3",
+    "@babel/runtime": "^7.28.3",
+    "@vitejs/plugin-react": "^5.0.0",
+    "vite": "^7.1.2"
+  }
+}
