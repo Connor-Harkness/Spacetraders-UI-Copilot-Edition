@@ -39,7 +39,7 @@ export default function MapScreen() {
     try {
       const [systemData, waypointsData] = await Promise.all([
         spaceTraders.getSystem(systemSymbol),
-        spaceTraders.getWaypoints(systemSymbol, 1, 50)
+        spaceTraders.getWaypoints(systemSymbol, 1, 20)
       ]);
 
       setCurrentSystem(systemData);
