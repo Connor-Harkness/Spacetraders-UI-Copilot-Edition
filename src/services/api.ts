@@ -144,6 +144,7 @@ export class SpaceTradersAPI {
   public async dockShip(shipSymbol: string): Promise<Ship> {
     const response = await this.request<ApiResponse<{ nav: Ship['nav'] }>>(`/my/ships/${shipSymbol}/dock`, {
       method: 'POST',
+      body: JSON.stringify({}),
     });
     
     // Return updated ship data by refetching
@@ -153,6 +154,7 @@ export class SpaceTradersAPI {
   public async orbitShip(shipSymbol: string): Promise<Ship> {
     const response = await this.request<ApiResponse<{ nav: Ship['nav'] }>>(`/my/ships/${shipSymbol}/orbit`, {
       method: 'POST',
+      body: JSON.stringify({}),
     });
     
     return this.getShip(shipSymbol);
@@ -161,6 +163,7 @@ export class SpaceTradersAPI {
   public async refuelShip(shipSymbol: string): Promise<Ship> {
     const response = await this.request<ApiResponse<any>>(`/my/ships/${shipSymbol}/refuel`, {
       method: 'POST',
+      body: JSON.stringify({}),
     });
     
     return this.getShip(shipSymbol);
@@ -170,6 +173,7 @@ export class SpaceTradersAPI {
   public async acceptContract(contractId: string): Promise<Contract> {
     const response = await this.request<ApiResponse<{ contract: Contract }>>(`/my/contracts/${contractId}/accept`, {
       method: 'POST',
+      body: JSON.stringify({}),
     });
     return response.data.contract;
   }
