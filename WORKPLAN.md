@@ -162,3 +162,7 @@ Future Enhancements
 - Advanced route optimization and trade calculators.
 - Alerts (cooldown complete, low fuel, market changes).
 - Fleet roles and templated behaviors per ship.
+
+RESTRICTIONS
+- no more than 2 Reqs/second to the space traders API
+- our site must be mobile accessible.
