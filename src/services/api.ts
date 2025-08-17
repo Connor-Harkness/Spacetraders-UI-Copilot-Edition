@@ -1,4 +1,4 @@
-import { Agent, Ship, Contract, ApiResponse, ApiError, TokenStore, AgentTokenEntry } from '../types/api';
+import { Agent, Ship, Contract, System, Waypoint, ApiResponse, ApiError, TokenStore, AgentTokenEntry } from '../types/api';
 import { Storage, RateLimiter } from '../utils';
 
 const API_BASE_URL = 'https://api.spacetraders.io/v2';
@@ -164,6 +164,51 @@ export class SpaceTradersAPI {
     });
     
     return this.getShip(shipSymbol);
+  }
+
+  // Contract actions
+  public async acceptContract(contractId: string): Promise<Contract> {
+    const response = await this.request<ApiResponse<{ contract: Contract }>>(`/my/contracts/${contractId}/accept`, {
+      method: 'POST',
+    });
+    return response.data.contract;
+  }
+
+  // Ship navigation
+  public async navigateShip(shipSymbol: string, waypointSymbol: string): Promise<Ship> {
+    const response = await this.request<ApiResponse<{ nav: Ship['nav'], fuel: Ship['fuel'] }>>(`/my/ships/${shipSymbol}/navigate`, {
+      method: 'POST',
+      body: JSON.stringify({ waypointSymbol }),
+    });
+    
+    return this.getShip(shipSymbol);
+  }
+
+  // Systems and waypoints
+  public async getSystems(page: number = 1, limit: number = 20): Promise<{ data: System[], meta: { total: number; page: number; limit: number } }> {
+    const response = await this.request<ApiResponse<System[]>>(`/systems?page=${page}&limit=${limit}`);
+    return {
+      data: response.data,
+      meta: response.meta || { total: 0, page, limit }
+    };
+  }
+
+  public async getSystem(systemSymbol: string): Promise<System> {
+    const response = await this.request<ApiResponse<System>>(`/systems/${systemSymbol}`);
+    return response.data;
+  }
+
+  public async getWaypoints(systemSymbol: string, page: number = 1, limit: number = 20): Promise<{ data: Waypoint[], meta: { total: number; page: number; limit: number } }> {
+    const response = await this.request<ApiResponse<Waypoint[]>>(`/systems/${systemSymbol}/waypoints?page=${page}&limit=${limit}`);
+    return {
+      data: response.data,
+      meta: response.meta || { total: 0, page, limit }
+    };
+  }
+
+  public async getWaypoint(systemSymbol: string, waypointSymbol: string): Promise<Waypoint> {
+    const response = await this.request<ApiResponse<Waypoint>>(`/systems/${systemSymbol}/waypoints/${waypointSymbol}`);
+    return response.data;
   }
 }
 
