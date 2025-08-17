@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import Dashboard from './src/screens/Dashboard';
 import ContractsScreen from './src/screens/ContractsScreen';
 import MapScreen from './src/screens/MapScreen';
+import ShipyardScreen from './src/screens/ShipyardScreen';
+import MiningScreen from './src/screens/MiningScreen';
+import MarketScreen from './src/screens/MarketScreen';
 import { Navigation } from './src/components/Navigation';
 import { TokenProvider } from './src/context/TokenContext';
 import './App.css';
@@ -15,6 +18,12 @@ export default function App() {
         return <ContractsScreen />;
       case 'map':
         return <MapScreen />;
+      case 'shipyard':
+        return <ShipyardScreen />;
+      case 'mining':
+        return <MiningScreen />;
+      case 'market':
+        return <MarketScreen />;
       case 'dashboard':
       default:
         return <Dashboard />;
