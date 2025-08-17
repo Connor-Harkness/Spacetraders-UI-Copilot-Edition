@@ -1,0 +1,18 @@
+client:733 [vite] connecting...
+client:827 [vite] connected.
+(index):1 [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) <input class=​"input" placeholder=​"Enter your agent token..." autocapitalize=​"none" autocorrect=​"off" type=​"password" value style=​"width:​ 100%;​">​
+api.spacetraders.io/v2/systems/X1-HV60/waypoints?page=1&limit=50:1  Failed to load resource: the server responded with a status of 422 ()
+hook.js:608 API request failed for /systems/X1-HV60/waypoints?page=1&limit=50: Error: The request could not be processed due to an invalid payload or application state.
+    at SpaceTradersAPI.request (api.ts:96:15)
+    at async SpaceTradersAPI.getWaypoints (api.ts:206:22)
+    at async Promise.all (:3000/index 1)
+    at async loadSystemData (MapScreen.tsx:40:43)
+    at async loadData (MapScreen.tsx:27:9)
+overrideMethod @ hook.js:608
+hook.js:608 System data load error: Error: The request could not be processed due to an invalid payload or application state.
+    at SpaceTradersAPI.request (api.ts:96:15)
+    at async SpaceTradersAPI.getWaypoints (api.ts:206:22)
+    at async Promise.all (:3000/index 1)
+    at async loadSystemData (MapScreen.tsx:40:43)
+    at async loadData (MapScreen.tsx:27:9)
+overrideMethod @ hook.js:608
