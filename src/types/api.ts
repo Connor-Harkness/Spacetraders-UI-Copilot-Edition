@@ -77,6 +77,54 @@ export interface ContractDeliverGood {
   unitsFulfilled: number;
 }
 
+export interface System {
+  symbol: string;
+  sectorSymbol: string;
+  type: string;
+  x: number;
+  y: number;
+  waypoints: WaypointInfo[];
+  factions: { symbol: string }[];
+}
+
+export interface WaypointInfo {
+  symbol: string;
+  type: string;
+  x: number;
+  y: number;
+}
+
+export interface Waypoint {
+  symbol: string;
+  type: 'PLANET' | 'GAS_GIANT' | 'MOON' | 'ORBITAL_STATION' | 'JUMP_GATE' | 'ASTEROID_FIELD' | 'ASTEROID' | 'ENGINEERED_ASTEROID' | 'ASTEROID_BASE' | 'NEBULA' | 'DEBRIS_FIELD' | 'GRAVITY_WELL' | 'ARTIFICIAL_GRAVITY_WELL' | 'FUEL_STATION';
+  systemSymbol: string;
+  x: number;
+  y: number;
+  orbitals: WaypointInfo[];
+  traits: WaypointTrait[];
+  modifiers?: WaypointModifier[];
+  chart?: {
+    waypointSymbol: string;
+    submittedBy: string;
+    submittedOn: string;
+  };
+  faction?: {
+    symbol: string;
+  };
+}
+
+export interface WaypointTrait {
+  symbol: string;
+  name: string;
+  description: string;
+}
+
+export interface WaypointModifier {
+  symbol: string;
+  name: string;
+  description: string;
+}
+
 export interface ApiResponse<T> {
   data: T;
   meta?: {
