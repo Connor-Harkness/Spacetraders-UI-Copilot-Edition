@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { spaceTraders } from '../services/api';
 import { useTokens } from '../context/TokenContext';
 import { Market, MarketTradeGood, Ship, System, Waypoint, Agent, TradeResult } from '../types/api';
+import { calculateDistance, findClosestShipDistance } from '../utils';
 
 interface BestSellOption {
   waypointSymbol: string;
@@ -56,7 +57,7 @@ export default function MarketScreen() {
     setError(null);
 
     try {
-      const [agentData, shipsData, systemsData] = await Promise.all([
+      const [agentData, shipsData, systemsResponse] = await Promise.all([
         spaceTraders.getAgent(),
         spaceTraders.getShips(),
         spaceTraders.getSystems(1, 20),
@@ -64,7 +65,28 @@ export default function MarketScreen() {
       
       setAgent(agentData);
       setShips(shipsData);
-      setSystems(systemsData.data);
+      
+      // Get ship positions for distance sorting
+      const shipPositions: { x: number; y: number }[] = [];
+      
+      for (const ship of shipsData) {
+        // Get the system for each ship to find its coordinates
+        try {
+          const systemData = await spaceTraders.getSystem(ship.nav.systemSymbol);
+          shipPositions.push({ x: systemData.x, y: systemData.y });
+        } catch (err) {
+          console.error(`Failed to get system data for ship ${ship.symbol}:`, err);
+        }
+      }
+      
+      // Sort systems by distance to closest ship
+      const sortedSystems = systemsResponse.data.sort((a, b) => {
+        const distanceA = findClosestShipDistance({ x: a.x, y: a.y }, shipPositions);
+        const distanceB = findClosestShipDistance({ x: b.x, y: b.y }, shipPositions);
+        return distanceA - distanceB;
+      });
+      
+      setSystems(sortedSystems);
       
       // Auto-select first ship with cargo
       const shipWithCargo = shipsData.find(ship => ship.cargo.units > 0);
@@ -95,7 +117,27 @@ export default function MarketScreen() {
           wp.type === 'ASTEROID_BASE'
         )
       );
-      setWaypoints(potentialMarkets);
+
+      // Get ship waypoint positions in this system for distance sorting
+      const shipWaypointPositions: { x: number; y: number }[] = [];
+      
+      ships.forEach(ship => {
+        if (ship.nav.systemSymbol === selectedSystem) {
+          const shipWaypoint = response.data.find(wp => wp.symbol === ship.nav.waypointSymbol);
+          if (shipWaypoint) {
+            shipWaypointPositions.push({ x: shipWaypoint.x, y: shipWaypoint.y });
+          }
+        }
+      });
+      
+      // Sort waypoints by distance to closest ship in this system
+      const sortedWaypoints = potentialMarkets.sort((a, b) => {
+        const distanceA = findClosestShipDistance({ x: a.x, y: a.y }, shipWaypointPositions);
+        const distanceB = findClosestShipDistance({ x: b.x, y: b.y }, shipWaypointPositions);
+        return distanceA - distanceB;
+      });
+      
+      setWaypoints(sortedWaypoints);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load waypoints';
       setError(errorMessage);

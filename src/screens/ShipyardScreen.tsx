@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { spaceTraders } from '../services/api';
 import { useTokens } from '../context/TokenContext';
-import { Shipyard, ShipyardShip, System, Waypoint, Agent } from '../types/api';
+import { Shipyard, ShipyardShip, System, Waypoint, Agent, Ship } from '../types/api';
+import { calculateDistance, findClosestShipDistance } from '../utils';
 
 export default function ShipyardScreen() {
   const { hasAgentToken } = useTokens();
@@ -11,6 +12,7 @@ export default function ShipyardScreen() {
   const [selectedWaypoint, setSelectedWaypoint] = useState<string>('');
   const [shipyard, setShipyard] = useState<Shipyard | null>(null);
   const [agent, setAgent] = useState<Agent | null>(null);
+  const [ships, setShips] = useState<Ship[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [purchasing, setPurchasing] = useState<string | null>(null);
@@ -20,6 +22,7 @@ export default function ShipyardScreen() {
     if (hasAgentToken) {
       loadSystems();
       loadAgent();
+      loadShips();
     }
   }, [hasAgentToken]);
 
@@ -46,13 +49,43 @@ export default function ShipyardScreen() {
     }
   };
 
+  const loadShips = async () => {
+    try {
+      const shipsData = await spaceTraders.getShips();
+      setShips(shipsData);
+    } catch (err) {
+      console.error('Failed to load ships:', err);
+    }
+  };
+
   const loadSystems = async () => {
     setLoading(true);
     setError(null);
     
     try {
       const response = await spaceTraders.getSystems(1, 20);
-      setSystems(response.data);
+      
+      // Get ship positions for distance sorting
+      const shipPositions: { x: number; y: number }[] = [];
+      
+      for (const ship of ships) {
+        // Get the system for each ship to find its coordinates
+        try {
+          const systemData = await spaceTraders.getSystem(ship.nav.systemSymbol);
+          shipPositions.push({ x: systemData.x, y: systemData.y });
+        } catch (err) {
+          console.error(`Failed to get system data for ship ${ship.symbol}:`, err);
+        }
+      }
+      
+      // Sort systems by distance to closest ship
+      const sortedSystems = response.data.sort((a, b) => {
+        const distanceA = findClosestShipDistance({ x: a.x, y: a.y }, shipPositions);
+        const distanceB = findClosestShipDistance({ x: b.x, y: b.y }, shipPositions);
+        return distanceA - distanceB;
+      });
+      
+      setSystems(sortedSystems);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load systems';
       setError(errorMessage);
@@ -77,7 +110,27 @@ export default function ShipyardScreen() {
           wp.type === 'ASTEROID_BASE'
         )
       );
-      setWaypoints(potentialShipyards);
+
+      // Get ship waypoint positions in this system for distance sorting
+      const shipWaypointPositions: { x: number; y: number }[] = [];
+      
+      ships.forEach(ship => {
+        if (ship.nav.systemSymbol === selectedSystem) {
+          const shipWaypoint = response.data.find(wp => wp.symbol === ship.nav.waypointSymbol);
+          if (shipWaypoint) {
+            shipWaypointPositions.push({ x: shipWaypoint.x, y: shipWaypoint.y });
+          }
+        }
+      });
+      
+      // Sort waypoints by distance to closest ship in this system
+      const sortedWaypoints = potentialShipyards.sort((a, b) => {
+        const distanceA = findClosestShipDistance({ x: a.x, y: a.y }, shipWaypointPositions);
+        const distanceB = findClosestShipDistance({ x: b.x, y: b.y }, shipWaypointPositions);
+        return distanceA - distanceB;
+      });
+      
+      setWaypoints(sortedWaypoints);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load waypoints';
       setError(errorMessage);
