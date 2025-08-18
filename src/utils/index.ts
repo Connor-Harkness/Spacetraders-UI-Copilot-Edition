@@ -80,3 +80,20 @@ export const getShipStatusText = (status: string): string => {
       return status;
   }
 };
+
+// Distance calculation utility
+export const calculateDistance = (point1: { x: number; y: number }, point2: { x: number; y: number }): number => {
+  const dx = point1.x - point2.x;
+  const dy = point1.y - point2.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+// Find the closest ship position to a given point
+export const findClosestShipDistance = (
+  point: { x: number; y: number },
+  shipPositions: { x: number; y: number }[]
+): number => {
+  if (shipPositions.length === 0) return Infinity;
+  
+  return Math.min(...shipPositions.map(shipPos => calculateDistance(point, shipPos)));
+};

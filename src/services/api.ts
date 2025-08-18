@@ -1,4 +1,4 @@
-import { Agent, Ship, Contract, System, Waypoint, ApiResponse, ApiError, TokenStore, AgentTokenEntry } from '../types/api';
+import { Agent, Ship, Contract, System, Waypoint, ApiResponse, ApiError, TokenStore, AgentTokenEntry, Shipyard, ShipyardShip, Survey, Extraction, Market, TradeResult } from '../types/api';
 import { Storage, RateLimiter } from '../utils';
 
 const API_BASE_URL = 'https://api.spacetraders.io/v2';
@@ -212,6 +212,68 @@ export class SpaceTradersAPI {
 
   public async getWaypoint(systemSymbol: string, waypointSymbol: string): Promise<Waypoint> {
     const response = await this.request<ApiResponse<Waypoint>>(`/systems/${systemSymbol}/waypoints/${waypointSymbol}`);
+    return response.data;
+  }
+
+  // M3: Shipyard endpoints
+  public async getShipyard(systemSymbol: string, waypointSymbol: string): Promise<Shipyard> {
+    const response = await this.request<ApiResponse<Shipyard>>(`/systems/${systemSymbol}/waypoints/${waypointSymbol}/shipyard`);
+    return response.data;
+  }
+
+  public async purchaseShip(shipType: string, waypointSymbol: string): Promise<{ ship: Ship; transaction: any }> {
+    const response = await this.request<ApiResponse<{ ship: Ship; transaction: any }>>('/my/ships', {
+      method: 'POST',
+      body: JSON.stringify({ shipType, waypointSymbol }),
+    });
+    return response.data;
+  }
+
+  // M4: Mining endpoints
+  public async extractResources(shipSymbol: string, survey?: Survey): Promise<{ extraction: Extraction; cooldown: Ship['cooldown']; cargo: Ship['cargo'] }> {
+    const body = survey ? { survey } : {};
+    const response = await this.request<ApiResponse<{ extraction: Extraction; cooldown: Ship['cooldown']; cargo: Ship['cargo'] }>>(`/my/ships/${shipSymbol}/extract`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    return response.data;
+  }
+
+  public async createSurvey(shipSymbol: string): Promise<{ surveys: Survey[]; cooldown: Ship['cooldown'] }> {
+    const response = await this.request<ApiResponse<{ surveys: Survey[]; cooldown: Ship['cooldown'] }>>(`/my/ships/${shipSymbol}/survey`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+    return response.data;
+  }
+
+  public async jettison(shipSymbol: string, symbol: string, units: number): Promise<{ cargo: Ship['cargo'] }> {
+    const response = await this.request<ApiResponse<{ cargo: Ship['cargo'] }>>(`/my/ships/${shipSymbol}/jettison`, {
+      method: 'POST',
+      body: JSON.stringify({ symbol, units }),
+    });
+    return response.data;
+  }
+
+  // M5: Market endpoints
+  public async getMarket(systemSymbol: string, waypointSymbol: string): Promise<Market> {
+    const response = await this.request<ApiResponse<Market>>(`/systems/${systemSymbol}/waypoints/${waypointSymbol}/market`);
+    return response.data;
+  }
+
+  public async sellCargo(shipSymbol: string, symbol: string, units: number): Promise<{ transaction: TradeResult; cargo: Ship['cargo']; agent: Agent }> {
+    const response = await this.request<ApiResponse<{ transaction: TradeResult; cargo: Ship['cargo']; agent: Agent }>>(`/my/ships/${shipSymbol}/sell`, {
+      method: 'POST',
+      body: JSON.stringify({ symbol, units }),
+    });
+    return response.data;
+  }
+
+  public async purchaseCargo(shipSymbol: string, symbol: string, units: number): Promise<{ transaction: TradeResult; cargo: Ship['cargo']; agent: Agent }> {
+    const response = await this.request<ApiResponse<{ transaction: TradeResult; cargo: Ship['cargo']; agent: Agent }>>(`/my/ships/${shipSymbol}/purchase`, {
+      method: 'POST',
+      body: JSON.stringify({ symbol, units }),
+    });
     return response.data;
   }
 }

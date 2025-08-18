@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { spaceTraders } from '../services/api';
 import { useTokens } from '../context/TokenContext';
 import { Ship, System, Waypoint } from '../types/api';
+import { calculateDistance } from '../utils';
 
 export default function MapScreen() {
   const { hasAgentToken } = useTokens();
@@ -43,7 +44,27 @@ export default function MapScreen() {
       ]);
 
       setCurrentSystem(systemData);
-      setWaypoints(waypointsData.data);
+      
+      // Sort waypoints by distance to selected ship if available
+      let sortedWaypoints = waypointsData.data;
+      if (selectedShip) {
+        const selectedShipWaypoint = waypointsData.data.find(wp => wp.symbol === selectedShip.nav.waypointSymbol);
+        if (selectedShipWaypoint) {
+          sortedWaypoints = waypointsData.data.sort((a, b) => {
+            const distanceA = calculateDistance(
+              { x: a.x, y: a.y }, 
+              { x: selectedShipWaypoint.x, y: selectedShipWaypoint.y }
+            );
+            const distanceB = calculateDistance(
+              { x: b.x, y: b.y }, 
+              { x: selectedShipWaypoint.x, y: selectedShipWaypoint.y }
+            );
+            return distanceA - distanceB;
+          });
+        }
+      }
+      
+      setWaypoints(sortedWaypoints);
     } catch (err) {
       console.error('System data load error:', err);
     }
@@ -59,6 +80,23 @@ export default function MapScreen() {
     setSelectedShip(ship);
     if (ship.nav.systemSymbol !== currentSystem?.symbol) {
       await loadSystemData(ship.nav.systemSymbol);
+    } else {
+      // Re-sort waypoints based on new selected ship
+      const selectedShipWaypoint = waypoints.find(wp => wp.symbol === ship.nav.waypointSymbol);
+      if (selectedShipWaypoint) {
+        const sortedWaypoints = waypoints.sort((a, b) => {
+          const distanceA = calculateDistance(
+            { x: a.x, y: a.y }, 
+            { x: selectedShipWaypoint.x, y: selectedShipWaypoint.y }
+          );
+          const distanceB = calculateDistance(
+            { x: b.x, y: b.y }, 
+            { x: selectedShipWaypoint.x, y: selectedShipWaypoint.y }
+          );
+          return distanceA - distanceB;
+        });
+        setWaypoints([...sortedWaypoints]);
+      }
     }
   };
 
@@ -90,19 +128,17 @@ export default function MapScreen() {
     }
   };
 
-  const calculateDistance = (waypoint: Waypoint) => {
+  const calculateWaypointDistance = (waypoint: Waypoint) => {
     if (!currentSystem || !selectedShip) return 0;
     
     const currentWaypoint = waypoints.find(w => w.symbol === selectedShip.nav.waypointSymbol);
     if (!currentWaypoint) return 0;
 
-    const dx = waypoint.x - currentWaypoint.x;
-    const dy = waypoint.y - currentWaypoint.y;
-    return Math.sqrt(dx * dx + dy * dy);
+    return calculateDistance({ x: waypoint.x, y: waypoint.y }, { x: currentWaypoint.x, y: currentWaypoint.y });
   };
 
   const estimateFuelCost = (waypoint: Waypoint) => {
-    const distance = calculateDistance(waypoint);
+    const distance = calculateWaypointDistance(waypoint);
     // Rough estimate: 1 fuel per unit distance, minimum 1
     return Math.max(1, Math.round(distance));
   };
@@ -215,7 +251,7 @@ export default function MapScreen() {
               <div className="waypoints-grid">
                 {waypoints.map(waypoint => {
                   const isCurrentLocation = selectedShip?.nav.waypointSymbol === waypoint.symbol;
-                  const distance = calculateDistance(waypoint);
+                  const distance = calculateWaypointDistance(waypoint);
                   const fuelCost = estimateFuelCost(waypoint);
                   const canNavigate = selectedShip && 
                     selectedShip.nav.status === 'IN_ORBIT' && 
@@ -237,7 +273,7 @@ export default function MapScreen() {
                       <div className="waypoint-details">
                         <div className="detail-row">
                           <span>Distance:</span>
-                          <span>{distance.toFixed(1)} units</span>
+                          <span>{calculateWaypointDistance(waypoint).toFixed(1)} units</span>
                         </div>
                         <div className="detail-row">
                           <span>Est. Fuel:</span>

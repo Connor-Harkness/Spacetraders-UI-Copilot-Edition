@@ -29,6 +29,11 @@ export interface Ship {
     morale: number;
     wages: number;
   };
+  frame: ShipFrame;
+  reactor: ShipReactor;
+  engine: ShipEngine;
+  modules: ShipModule[];
+  mounts: ShipMount[];
   cargo: {
     capacity: number;
     units: number;
@@ -153,4 +158,154 @@ export interface ApiError {
     code: number;
     data?: any;
   };
+}
+
+// M3: Shipyard types
+export interface Shipyard {
+  symbol: string;
+  shipTypes: ShipType[];
+  transactions?: ShipyardTransaction[];
+  ships?: ShipyardShip[];
+  modificationsFee: number;
+}
+
+export interface ShipType {
+  type: string;
+}
+
+export interface ShipyardTransaction {
+  waypointSymbol: string;
+  shipSymbol: string;
+  price: number;
+  agentSymbol: string;
+  timestamp: string;
+}
+
+export interface ShipyardShip {
+  type: string;
+  name: string;
+  description: string;
+  supply: 'SCARCE' | 'LIMITED' | 'MODERATE' | 'HIGH' | 'ABUNDANT';
+  purchasePrice: number;
+  frame: ShipFrame;
+  reactor: ShipReactor;
+  engine: ShipEngine;
+  modules: ShipModule[];
+  mounts: ShipMount[];
+}
+
+export interface ShipFrame {
+  symbol: string;
+  name: string;
+  description: string;
+  condition?: number;
+  moduleSlots: number;
+  mountingPoints: number;
+  fuelCapacity: number;
+  requirements: ShipRequirements;
+}
+
+export interface ShipReactor {
+  symbol: string;
+  name: string;
+  description: string;
+  condition?: number;
+  powerOutput: number;
+  requirements: ShipRequirements;
+}
+
+export interface ShipEngine {
+  symbol: string;
+  name: string;
+  description: string;
+  condition?: number;
+  speed: number;
+  requirements: ShipRequirements;
+}
+
+export interface ShipModule {
+  symbol: string;
+  capacity?: number;
+  range?: number;
+  name: string;
+  description: string;
+  requirements: ShipRequirements;
+}
+
+export interface ShipMount {
+  symbol: string;
+  name: string;
+  description: string;
+  strength?: number;
+  deposits?: string[];
+  requirements: ShipRequirements;
+}
+
+export interface ShipRequirements {
+  power?: number;
+  crew?: number;
+  slots?: number;
+}
+
+// M4: Mining types
+export interface Survey {
+  signature: string;
+  symbol: string;
+  deposits: SurveyDeposit[];
+  expiration: string;
+  size: 'SMALL' | 'MODERATE' | 'LARGE';
+}
+
+export interface SurveyDeposit {
+  symbol: string;
+}
+
+export interface Extraction {
+  shipSymbol: string;
+  yield: {
+    symbol: string;
+    units: number;
+  };
+}
+
+// M5: Market types
+export interface Market {
+  symbol: string;
+  exports: MarketTradeGood[];
+  imports: MarketTradeGood[];
+  exchange: MarketTradeGood[];
+  transactions?: MarketTransaction[];
+  tradeGoods?: MarketTradeGood[];
+}
+
+export interface MarketTradeGood {
+  symbol: string;
+  name: string;
+  description: string;
+  type?: 'EXPORT' | 'IMPORT' | 'EXCHANGE';
+  tradeVolume?: number;
+  supply?: 'SCARCE' | 'LIMITED' | 'MODERATE' | 'HIGH' | 'ABUNDANT';
+  purchasePrice?: number;
+  sellPrice?: number;
+}
+
+export interface MarketTransaction {
+  waypointSymbol: string;
+  shipSymbol: string;
+  tradeSymbol: string;
+  type: 'PURCHASE' | 'SELL';
+  units: number;
+  pricePerUnit: number;
+  totalPrice: number;
+  timestamp: string;
+}
+
+export interface TradeResult {
+  waypointSymbol: string;
+  tradeSymbol: string;
+  type: 'PURCHASE' | 'SELL';
+  units: number;
+  pricePerUnit: number;
+  totalPrice: number;
+  timestamp: string;
 }
