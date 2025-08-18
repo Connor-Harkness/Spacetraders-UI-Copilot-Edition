@@ -29,6 +29,11 @@ export interface Ship {
     morale: number;
     wages: number;
   };
+  frame: ShipFrame;
+  reactor: ShipReactor;
+  engine: ShipEngine;
+  modules: ShipModule[];
+  mounts: ShipMount[];
   cargo: {
     capacity: number;
     units: number;

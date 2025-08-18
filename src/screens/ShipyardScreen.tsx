@@ -51,7 +51,7 @@ export default function ShipyardScreen() {
     setError(null);
     
     try {
-      const response = await spaceTraders.getSystems(1, 50);
+      const response = await spaceTraders.getSystems(1, 20);
       setSystems(response.data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load systems';
