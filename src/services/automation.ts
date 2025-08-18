@@ -51,7 +51,7 @@ export class AutomationOrchestrator {
   private actionQueues: Map<string, ActionStep[]> = new Map();
   private isRunning: boolean = false;
   private tickInterval: number = 5000; // 5 seconds
-  private intervalId?: NodeJS.Timeout;
+  private intervalId?: ReturnType<typeof setInterval>;
 
   constructor() {
     this.loadStates();
@@ -199,7 +199,7 @@ export class AutomationOrchestrator {
     const queue = this.actionQueues.get(state.shipSymbol) || [];
 
     // Check if ship has active cooldown
-    if (ship.cooldown.remainingSeconds > 0) {
+    if (ship.cooldown && ship.cooldown.remainingSeconds > 0) {
       state.currentTask = `Waiting for cooldown (${ship.cooldown.remainingSeconds}s)`;
       this.saveStates();
       return;
@@ -387,8 +387,8 @@ export class AutomationOrchestrator {
     state.currentTask = 'Checking active contracts';
     
     try {
-      const contracts = await spaceTraders.getMyContracts();
-      const activeContract = contracts.find(c => c.accepted && !c.fulfilled);
+      const contracts = await spaceTraders.getContracts();
+      const activeContract = contracts.find((c: any) => c.accepted && !c.fulfilled);
       
       if (!activeContract) {
         state.currentTask = 'No active contracts';
