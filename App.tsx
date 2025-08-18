@@ -25,6 +25,8 @@ export default function App() {
         return <MiningScreen />;
       case 'market':
         return <MarketScreen />;
+      case 'missions':
+        return <div className="screen-container"><h2>Mission Wizard</h2><p>Mission system coming soon!</p></div>;
       case 'operations':
         return <OperationsScreen />;
       case 'dashboard':
