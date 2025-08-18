@@ -13,6 +13,7 @@ export function Navigation({ currentScreen, onScreenChange }: NavigationProps) {
     { key: 'shipyard', label: 'Shipyard', icon: '🚢' },
     { key: 'mining', label: 'Mining', icon: '⛏️' },
     { key: 'market', label: 'Market', icon: '💰' },
+    { key: 'operations', label: 'Operations', icon: '⚙️' },
   ];
 
   return (

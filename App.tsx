@@ -5,6 +5,7 @@ import MapScreen from './src/screens/MapScreen';
 import ShipyardScreen from './src/screens/ShipyardScreen';
 import MiningScreen from './src/screens/MiningScreen';
 import MarketScreen from './src/screens/MarketScreen';
+import OperationsScreen from './src/screens/OperationsScreen';
 import { Navigation } from './src/components/Navigation';
 import { TokenProvider } from './src/context/TokenContext';
 import './App.css';
@@ -24,6 +25,8 @@ export default function App() {
         return <MiningScreen />;
       case 'market':
         return <MarketScreen />;
+      case 'operations':
+        return <OperationsScreen />;
       case 'dashboard':
       default:
         return <Dashboard />;
