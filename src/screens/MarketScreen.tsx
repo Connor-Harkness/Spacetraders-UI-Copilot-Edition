@@ -59,7 +59,7 @@ export default function MarketScreen() {
       const [agentData, shipsData, systemsData] = await Promise.all([
         spaceTraders.getAgent(),
         spaceTraders.getShips(),
-        spaceTraders.getSystems(1, 50),
+        spaceTraders.getSystems(1, 20),
       ]);
       
       setAgent(agentData);

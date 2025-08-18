@@ -10,6 +10,23 @@ export const TokenSetup: React.FC<TokenSetupProps> = ({ onComplete }) => {
   const [loading, setLoading] = useState(false);
   const { addAgentToken, setCurrentAgent } = useTokens();
 
+  // Check for testing agent token from environment variables
+  React.useEffect(() => {
+    const checkForTestingToken = () => {
+      // Check for Testing_agent repository secret
+      const testingToken = process.env.TESTING_AGENT || 
+                          process.env.REACT_APP_TESTING_AGENT ||
+                          (window as any).__TESTING_AGENT__;
+      
+      if (testingToken) {
+        setAgentToken(testingToken);
+        console.log('Using Testing_agent repository secret for testing');
+      }
+    };
+
+    checkForTestingToken();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

@@ -63,7 +63,7 @@ export default function MiningScreen() {
       // Select first mining-capable ship
       const miningShip = shipsData.find(ship => 
         ship.registration.role === 'EXCAVATOR' || 
-        ship.mounts?.some((mount: any) => mount.symbol.includes('MINING'))
+        ship.mounts?.some((mount) => mount.symbol.includes('MINING'))
       );
       if (miningShip) {
         setSelectedShip(miningShip.symbol);
