@@ -57,8 +57,8 @@ export default function OperationsScreen() {
     
     try {
       const [shipsData, contractsData] = await Promise.all([
-        spaceTraders.getMyShips(),
-        spaceTraders.getMyContracts()
+        spaceTraders.getShips(),
+        spaceTraders.getContracts()
       ]);
       
       setShips(shipsData);
@@ -120,7 +120,7 @@ export default function OperationsScreen() {
           type: 'mining',
           shipSymbol: ship.symbol,
           description: `Mining at ${ship.nav.waypointSymbol}`,
-          status: ship.cooldown.remainingSeconds > 0 ? 'in_progress' : 'pending',
+          status: ship.cooldown?.remainingSeconds && ship.cooldown.remainingSeconds > 0 ? 'in_progress' : 'pending',
           priority: 'high',
           progress: ship.cargo.units / ship.cargo.capacity * 100
         });

@@ -20,6 +20,24 @@ export interface Ship {
     waypointSymbol: string;
     status: 'IN_TRANSIT' | 'IN_ORBIT' | 'DOCKED';
     flightMode: 'DRIFT' | 'STEALTH' | 'CRUISE' | 'BURN';
+    route?: {
+      destination: {
+        symbol: string;
+        type: string;
+        systemSymbol: string;
+        x: number;
+        y: number;
+      };
+      origin: {
+        symbol: string;
+        type: string;
+        systemSymbol: string;
+        x: number;
+        y: number;
+      };
+      departure: string;
+      arrival: string;
+    };
   };
   crew: {
     current: number;
