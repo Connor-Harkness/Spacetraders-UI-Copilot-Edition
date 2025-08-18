@@ -85,7 +85,7 @@ export default function MarketScreen() {
     setLoading(true);
     
     try {
-      const response = await spaceTraders.getWaypoints(selectedSystem, 1, 100);
+      const response = await spaceTraders.getWaypoints(selectedSystem, 1, 20);
       // Filter waypoints that might have markets
       const potentialMarkets = response.data.filter(wp => 
         wp.traits.some(trait => 

@@ -68,7 +68,7 @@ export default function ShipyardScreen() {
     setError(null);
     
     try {
-      const response = await spaceTraders.getWaypoints(selectedSystem, 1, 100);
+      const response = await spaceTraders.getWaypoints(selectedSystem, 1, 20);
       // Filter waypoints that might have shipyards
       const potentialShipyards = response.data.filter(wp => 
         wp.traits.some(trait => 
